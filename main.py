@@ -31,9 +31,10 @@ def main():
     with HandLandmarker.create_from_options(options) as landmarker:
         while True:
             ret, frame = cam.read()
-            frame = cv2.flip(frame, 1)
+            
             if not ret:
                 break
+            frame = cv2.flip(frame, 1)
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
             mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame_rgb)
@@ -58,9 +59,17 @@ def main():
 
 def draw_hands(result, frame):
     h, w, _ = frame.shape
-    thumb_tip, pointer_tip = result.hand_landmarks[0][4], result.hand_landmarks[0][8]
-    cv2.circle(frame, (int(w * result.hand_landmarks[0][8].x), int(h * result.hand_landmarks[0][8].y)), 50, (125, 0, 130), -1)
-    cv2.circle(frame, (int(w * result.hand_landmarks[0][4].x), int(h * result.hand_landmarks[0][4].y)), 50, (125, 0, 130), -1)
+    size = 20
+    color = (125, 0, 130)
+    for hand in result.hand_landmarks:
+        thumb, pointer, middle, ring, pinky  = hand[4], hand[8], hand[12], hand[16], hand[20]
+        cv2.circle(frame, (int(w * thumb.x), int(h * thumb.y)), size, color, -1)
+        cv2.circle(frame, (int(w * pointer.x), int(h * pointer.y)), size, color, -1)
+        cv2.circle(frame, (int(w * middle.x), int(h * middle.y)), size, color, -1)
+        cv2.circle(frame, (int(w * ring.x), int(h * ring.y)), size, color, -1)
+        cv2.circle(frame, (int(w * pinky.x), int(h * pinky.y)), size, color, -1)
+
+
 
 if __name__ == "__main__":
     main()
