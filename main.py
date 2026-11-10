@@ -1,5 +1,6 @@
 import cv2
 import time
+import math
 import mediapipe as mp
 import numpy as np
 
@@ -42,7 +43,6 @@ def main():
             
             out.write(frame_rgb)
             result = landmarker.detect_for_video(mp_image, timestamp_ms)
-            print(result.hand_landmarks)
 
             if result.hand_landmarks:
                 draw_hands(result, frame)
@@ -60,12 +60,20 @@ def main():
 def draw_hands(result, frame):
     h, w, _ = frame.shape
     size = 10
+    thickness = 3
     color = (125, 0, 130)
+
+    index_pairs = [(0,1),(1,2),(2,3),(3,4),(0,5),(5,6),(6,7),(7,8),(5,9),(9,10),(10,11),(11,12),(9,13),(13,14),(14,15),(15,16),(13,17),(0,17),(17,18),(18,19),(19,20)]
     for landmark in result.hand_landmarks:
-        hand = [landmark[0], landmark[1], landmark[2], landmark[4], landmark[5], landmark[6], landmark[8], landmark[9], landmark[10], landmark[12], landmark[13], landmark[14], landmark[16], landmark[17], landmark[18], landmark[20]]
+        points = []
+        hand = [landmark[0], landmark[1], landmark[2], landmark[3], landmark[4], landmark[5], landmark[6], landmark[7], landmark[8], landmark[9], landmark[10], landmark[11], landmark[12], landmark[13], landmark[14], landmark[15], landmark[16], landmark[17], landmark[18], landmark[19], landmark[20]]
+
         for index in hand:
+            points.append((int(index.x * w), int(index.y * h)))
             cv2.circle(frame, (int(w * index.x), int(h * index.y)), size, color, -1)
-    
+            
+        for a, b in index_pairs:
+            cv2.line(frame, points[a], points[b], color, thickness)
 
 
 
