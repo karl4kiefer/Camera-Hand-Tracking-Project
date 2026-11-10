@@ -59,15 +59,13 @@ def main():
 
 def draw_hands(result, frame):
     h, w, _ = frame.shape
-    size = 20
+    size = 10
     color = (125, 0, 130)
-    for hand in result.hand_landmarks:
-        thumb, pointer, middle, ring, pinky  = hand[4], hand[8], hand[12], hand[16], hand[20]
-        cv2.circle(frame, (int(w * thumb.x), int(h * thumb.y)), size, color, -1)
-        cv2.circle(frame, (int(w * pointer.x), int(h * pointer.y)), size, color, -1)
-        cv2.circle(frame, (int(w * middle.x), int(h * middle.y)), size, color, -1)
-        cv2.circle(frame, (int(w * ring.x), int(h * ring.y)), size, color, -1)
-        cv2.circle(frame, (int(w * pinky.x), int(h * pinky.y)), size, color, -1)
+    for landmark in result.hand_landmarks:
+        hand = [landmark[0], landmark[1], landmark[2], landmark[4], landmark[5], landmark[6], landmark[8], landmark[9], landmark[10], landmark[12], landmark[13], landmark[14], landmark[16], landmark[17], landmark[18], landmark[20]]
+        for index in hand:
+            cv2.circle(frame, (int(w * index.x), int(h * index.y)), size, color, -1)
+    
 
 
 
