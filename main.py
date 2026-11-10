@@ -1,6 +1,8 @@
 import cv2
 import time
 import mediapipe as mp
+import numpy as np
+
 
 
 # camera 
@@ -25,7 +27,7 @@ def main():
     )
 
     start = time.time()    
-    print("Starting feed loop")
+    print("Starting main loop")
     with HandLandmarker.create_from_options(options) as landmarker:
         while True:
             ret, frame = cam.read()
@@ -40,9 +42,12 @@ def main():
             out.write(frame_rgb)
             result = landmarker.detect_for_video(mp_image, timestamp_ms)
             print(result.hand_landmarks)
+
+            if result.hand_landmarks:
+                draw_hands(result, frame)
             
             cv2.imshow('Camera', frame)
-            if cv2.waitKey(1) == ord('q'):
+            if (cv2.waitKey(1) & 0xFF) == 27:
                 break
 
         
@@ -51,6 +56,11 @@ def main():
     cv2.destroyAllWindows()
 
 
+def draw_hands(result, frame):
+    h, w, _ = frame.shape
+    thumb_tip, pointer_tip = result.hand_landmarks[0][4], result.hand_landmarks[0][8]
+    cv2.circle(frame, (int(w * result.hand_landmarks[0][8].x), int(h * result.hand_landmarks[0][8].y)), 50, (125, 0, 130), -1)
+    cv2.circle(frame, (int(w * result.hand_landmarks[0][4].x), int(h * result.hand_landmarks[0][4].y)), 50, (125, 0, 130), -1)
 
 if __name__ == "__main__":
     main()
